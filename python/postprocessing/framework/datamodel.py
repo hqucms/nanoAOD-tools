@@ -68,6 +68,8 @@ class Object:
         ret = ROOT.TLorentzVector()
         ret.SetPtEtaPhiM(self.pt,self.eta,self.phi,self.mass)
         return ret
+    def polarP4(self):
+        return ROOT.Math.PtEtaPhiMVector(self.pt,self.eta,self.phi,self.mass)
     def DeltaR(self,other):
         if isinstance(other,ROOT.TLorentzVector):
           deta = abs(other.Eta()-self.eta)
