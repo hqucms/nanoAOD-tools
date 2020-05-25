@@ -13,6 +13,13 @@ import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
+def clock():
+    try:
+        return time.clock()
+    except AttributeError:
+        return time.process_time()
+
+
 class PostProcessor:
     def __init__(self, outputDir, inputFiles, cut=None, branchsel=None, modules=[], compression="LZMA:9", friend=False, postfix=None,
                  jsonInput=None, noOut=False, justcount=False, provenance=False, haddFileName=None, fwkJobReport=False, histFileName=None, histDirName=None, outputbranchsel=None, maxEntries=None, firstEntry=0,
@@ -57,10 +64,10 @@ class PostProcessor:
         try:
             if verbose:
                 print("Filename %s is remote, will do a copy to local path %s " % (fname, localfile))
-            start = time.clock()
+            start = clock()
             subprocess.check_output(["xrdcp", "-f", "-N", fname, localfile])
             if verbose:
-                print("Time used for transferring the file locally: %s s" % (time.clock() - start))
+                print("Time used for transferring the file locally: %s s" % (clock() - start))
             return localfile, (not self.longTermCache)
         except:
             if verbose:
@@ -119,7 +126,7 @@ class PostProcessor:
 
         fullClone = (len(self.modules) == 0)
         outFileNames = []
-        t0 = time.clock()
+        t0 = clock()
         totEntriesRead = 0
         for fname in self.inputFiles:
             ffnames = []
@@ -219,7 +226,7 @@ class PostProcessor:
         for m in self.modules:
             m.endJob()
 
-        print(totEntriesRead/(time.clock()-t0), "Hz")
+        print(totEntriesRead / (clock() - t0), "Hz")
 
         if self.haddFileName:
             haddnano = "./haddnano.py" if os.path.isfile("./haddnano.py") else "haddnano.py"
